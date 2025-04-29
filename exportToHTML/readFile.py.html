@@ -1,0 +1,122 @@
+<html>
+<head>
+<title>readFile.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+readFile.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">pandas </span><span class="s0">as </span><span class="s1">pd</span>
+<span class="s0">import </span><span class="s1">numpy </span><span class="s0">as </span><span class="s1">np</span>
+<span class="s0">import </span><span class="s1">matplotlib</span><span class="s2">.</span><span class="s1">pyplot </span><span class="s0">as </span><span class="s1">plt</span>
+<span class="s0">import </span><span class="s1">seaborn </span><span class="s0">as </span><span class="s1">sns</span>
+
+<span class="s0">from </span><span class="s1">sklearn</span><span class="s2">.</span><span class="s1">metrics </span><span class="s0">import </span><span class="s2">(</span>
+    <span class="s1">roc_auc_score</span><span class="s2">, </span><span class="s1">classification_report</span><span class="s2">, </span><span class="s1">accuracy_score</span><span class="s2">,</span>
+    <span class="s1">confusion_matrix</span><span class="s2">, </span><span class="s1">ConfusionMatrixDisplay</span>
+<span class="s2">)</span>
+<span class="s0">from </span><span class="s1">sklearn</span><span class="s2">.</span><span class="s1">preprocessing </span><span class="s0">import </span><span class="s1">StandardScaler</span>
+<span class="s0">from </span><span class="s1">sklearn</span><span class="s2">.</span><span class="s1">model_selection </span><span class="s0">import </span><span class="s1">train_test_split</span>
+<span class="s0">from </span><span class="s1">sklearn</span><span class="s2">.</span><span class="s1">linear_model </span><span class="s0">import </span><span class="s1">LogisticRegression</span>
+<span class="s0">from </span><span class="s1">sklearn</span><span class="s2">.</span><span class="s1">tree </span><span class="s0">import </span><span class="s1">DecisionTreeClassifier</span>
+<span class="s0">from </span><span class="s1">sklearn</span><span class="s2">.</span><span class="s1">ensemble </span><span class="s0">import </span><span class="s1">RandomForestClassifier</span>
+
+<span class="s3"># Load and split the data</span>
+<span class="s1">df </span><span class="s2">= </span><span class="s1">pd</span><span class="s2">.</span><span class="s1">read_csv</span><span class="s2">(</span><span class="s4">&quot;heart.csv&quot;</span><span class="s2">)</span>
+<span class="s1">X </span><span class="s2">= </span><span class="s1">df</span><span class="s2">.</span><span class="s1">drop</span><span class="s2">(</span><span class="s4">&quot;target&quot;</span><span class="s2">, </span><span class="s1">axis</span><span class="s2">=</span><span class="s5">1</span><span class="s2">)</span>
+<span class="s1">y </span><span class="s2">= </span><span class="s1">df</span><span class="s2">[</span><span class="s4">&quot;target&quot;</span><span class="s2">]</span>
+
+<span class="s3"># Scale the features (Logistic Regression needs this)</span>
+<span class="s1">scaler </span><span class="s2">= </span><span class="s1">StandardScaler</span><span class="s2">()</span>
+<span class="s1">X_scaled </span><span class="s2">= </span><span class="s1">scaler</span><span class="s2">.</span><span class="s1">fit_transform</span><span class="s2">(</span><span class="s1">X</span><span class="s2">)</span>
+
+<span class="s3"># Split after scaling</span>
+<span class="s1">X_train</span><span class="s2">, </span><span class="s1">X_test</span><span class="s2">, </span><span class="s1">y_train</span><span class="s2">, </span><span class="s1">y_test </span><span class="s2">= </span><span class="s1">train_test_split</span><span class="s2">(</span>
+    <span class="s1">X_scaled</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">test_size</span><span class="s2">=</span><span class="s5">0.2</span><span class="s2">, </span><span class="s1">random_state</span><span class="s2">=</span><span class="s5">42</span>
+<span class="s2">)</span>
+
+<span class="s3"># Train models</span>
+<span class="s1">log_model </span><span class="s2">= </span><span class="s1">LogisticRegression</span><span class="s2">(</span><span class="s1">max_iter</span><span class="s2">=</span><span class="s5">1000</span><span class="s2">)</span>
+<span class="s1">tree_model </span><span class="s2">= </span><span class="s1">DecisionTreeClassifier</span><span class="s2">()</span>
+<span class="s1">forest_model </span><span class="s2">= </span><span class="s1">RandomForestClassifier</span><span class="s2">()</span>
+
+<span class="s1">log_model</span><span class="s2">.</span><span class="s1">fit</span><span class="s2">(</span><span class="s1">X_train</span><span class="s2">, </span><span class="s1">y_train</span><span class="s2">)</span>
+<span class="s1">tree_model</span><span class="s2">.</span><span class="s1">fit</span><span class="s2">(</span><span class="s1">X_train</span><span class="s2">, </span><span class="s1">y_train</span><span class="s2">)</span>
+<span class="s1">forest_model</span><span class="s2">.</span><span class="s1">fit</span><span class="s2">(</span><span class="s1">X_train</span><span class="s2">, </span><span class="s1">y_train</span><span class="s2">)</span>
+
+<span class="s3"># Predictions</span>
+<span class="s1">log_preds </span><span class="s2">= </span><span class="s1">log_model</span><span class="s2">.</span><span class="s1">predict</span><span class="s2">(</span><span class="s1">X_test</span><span class="s2">)</span>
+<span class="s1">tree_preds </span><span class="s2">= </span><span class="s1">tree_model</span><span class="s2">.</span><span class="s1">predict</span><span class="s2">(</span><span class="s1">X_test</span><span class="s2">)</span>
+<span class="s1">forest_preds </span><span class="s2">= </span><span class="s1">forest_model</span><span class="s2">.</span><span class="s1">predict</span><span class="s2">(</span><span class="s1">X_test</span><span class="s2">)</span>
+
+<span class="s3"># Print results</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">--- Logistic Regression ---&quot;</span><span class="s2">)</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Accuracy:&quot;</span><span class="s2">, </span><span class="s1">accuracy_score</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">log_preds</span><span class="s2">))</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s1">classification_report</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">log_preds</span><span class="s2">))</span>
+
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">--- Decision Tree ---&quot;</span><span class="s2">)</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Accuracy:&quot;</span><span class="s2">, </span><span class="s1">accuracy_score</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">tree_preds</span><span class="s2">))</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s1">classification_report</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">tree_preds</span><span class="s2">))</span>
+
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">--- Random Forest ---&quot;</span><span class="s2">)</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Accuracy:&quot;</span><span class="s2">, </span><span class="s1">accuracy_score</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">forest_preds</span><span class="s2">))</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s1">classification_report</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">forest_preds</span><span class="s2">))</span>
+
+<span class="s3"># ROC-AUC scores</span>
+<span class="s1">log_proba </span><span class="s2">= </span><span class="s1">log_model</span><span class="s2">.</span><span class="s1">predict_proba</span><span class="s2">(</span><span class="s1">X_test</span><span class="s2">)[:, </span><span class="s5">1</span><span class="s2">]</span>
+<span class="s1">tree_proba </span><span class="s2">= </span><span class="s1">tree_model</span><span class="s2">.</span><span class="s1">predict_proba</span><span class="s2">(</span><span class="s1">X_test</span><span class="s2">)[:, </span><span class="s5">1</span><span class="s2">]</span>
+<span class="s1">forest_proba </span><span class="s2">= </span><span class="s1">forest_model</span><span class="s2">.</span><span class="s1">predict_proba</span><span class="s2">(</span><span class="s1">X_test</span><span class="s2">)[:, </span><span class="s5">1</span><span class="s2">]</span>
+
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">--- ROC-AUC Scores ---&quot;</span><span class="s2">)</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Logistic Regression ROC-AUC:&quot;</span><span class="s2">, </span><span class="s1">roc_auc_score</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">log_proba</span><span class="s2">))</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Decision Tree ROC-AUC:&quot;</span><span class="s2">, </span><span class="s1">roc_auc_score</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">tree_proba</span><span class="s2">))</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Random Forest ROC-AUC:&quot;</span><span class="s2">, </span><span class="s1">roc_auc_score</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">forest_proba</span><span class="s2">))</span>
+
+<span class="s3"># Confusion Matrix Plots</span>
+<span class="s0">for </span><span class="s1">model_name</span><span class="s2">, </span><span class="s1">preds </span><span class="s0">in </span><span class="s1">zip</span><span class="s2">(</span>
+    <span class="s2">[</span><span class="s4">&quot;Logistic Regression&quot;</span><span class="s2">, </span><span class="s4">&quot;Decision Tree&quot;</span><span class="s2">, </span><span class="s4">&quot;Random Forest&quot;</span><span class="s2">],</span>
+    <span class="s2">[</span><span class="s1">log_preds</span><span class="s2">, </span><span class="s1">tree_preds</span><span class="s2">, </span><span class="s1">forest_preds</span><span class="s2">]</span>
+<span class="s2">):</span>
+    <span class="s1">cm </span><span class="s2">= </span><span class="s1">confusion_matrix</span><span class="s2">(</span><span class="s1">y_test</span><span class="s2">, </span><span class="s1">preds</span><span class="s2">)</span>
+    <span class="s1">disp </span><span class="s2">= </span><span class="s1">ConfusionMatrixDisplay</span><span class="s2">(</span><span class="s1">confusion_matrix</span><span class="s2">=</span><span class="s1">cm</span><span class="s2">)</span>
+    <span class="s1">disp</span><span class="s2">.</span><span class="s1">plot</span><span class="s2">()</span>
+    <span class="s1">plt</span><span class="s2">.</span><span class="s1">title</span><span class="s2">(</span><span class="s4">f&quot;</span><span class="s0">{</span><span class="s1">model_name</span><span class="s0">} </span><span class="s4">Confusion Matrix&quot;</span><span class="s2">)</span>
+    <span class="s1">plt</span><span class="s2">.</span><span class="s1">show</span><span class="s2">()</span>
+
+<span class="s3"># Random Forest Feature Importance</span>
+<span class="s1">features </span><span class="s2">= </span><span class="s1">df</span><span class="s2">.</span><span class="s1">drop</span><span class="s2">(</span><span class="s4">&quot;target&quot;</span><span class="s2">, </span><span class="s1">axis</span><span class="s2">=</span><span class="s5">1</span><span class="s2">).</span><span class="s1">columns</span>
+<span class="s1">importances </span><span class="s2">= </span><span class="s1">forest_model</span><span class="s2">.</span><span class="s1">feature_importances_</span>
+<span class="s1">forest_importance </span><span class="s2">= </span><span class="s1">pd</span><span class="s2">.</span><span class="s1">Series</span><span class="s2">(</span><span class="s1">importances</span><span class="s2">, </span><span class="s1">index</span><span class="s2">=</span><span class="s1">features</span><span class="s2">).</span><span class="s1">sort_values</span><span class="s2">(</span><span class="s1">ascending</span><span class="s2">=</span><span class="s0">False</span><span class="s2">)</span>
+
+<span class="s1">plt</span><span class="s2">.</span><span class="s1">figure</span><span class="s2">(</span><span class="s1">figsize</span><span class="s2">=(</span><span class="s5">10</span><span class="s2">, </span><span class="s5">6</span><span class="s2">))</span>
+<span class="s1">sns</span><span class="s2">.</span><span class="s1">barplot</span><span class="s2">(</span><span class="s1">x</span><span class="s2">=</span><span class="s1">forest_importance</span><span class="s2">, </span><span class="s1">y</span><span class="s2">=</span><span class="s1">forest_importance</span><span class="s2">.</span><span class="s1">index</span><span class="s2">)</span>
+<span class="s1">plt</span><span class="s2">.</span><span class="s1">title</span><span class="s2">(</span><span class="s4">&quot;Random Forest Feature Importance&quot;</span><span class="s2">)</span>
+<span class="s1">plt</span><span class="s2">.</span><span class="s1">xlabel</span><span class="s2">(</span><span class="s4">&quot;Importance Score&quot;</span><span class="s2">)</span>
+<span class="s1">plt</span><span class="s2">.</span><span class="s1">ylabel</span><span class="s2">(</span><span class="s4">&quot;Features&quot;</span><span class="s2">)</span>
+<span class="s1">plt</span><span class="s2">.</span><span class="s1">tight_layout</span><span class="s2">()</span>
+<span class="s1">plt</span><span class="s2">.</span><span class="s1">show</span><span class="s2">()</span>
+
+<span class="s3">#Predict Random Paitents</span>
+<span class="s1">example_patient </span><span class="s2">= </span><span class="s1">pd</span><span class="s2">.</span><span class="s1">DataFrame</span><span class="s2">([[</span>
+    <span class="s5">63</span><span class="s2">, </span><span class="s5">1</span><span class="s2">, </span><span class="s5">3</span><span class="s2">, </span><span class="s5">145</span><span class="s2">, </span><span class="s5">233</span><span class="s2">, </span><span class="s5">1</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s5">150</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s5">2.3</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s5">1</span>
+<span class="s2">]], </span><span class="s1">columns</span><span class="s2">=</span><span class="s1">X</span><span class="s2">.</span><span class="s1">columns</span><span class="s2">)</span>
+
+<span class="s1">example_patient_scaled </span><span class="s2">= </span><span class="s1">scaler</span><span class="s2">.</span><span class="s1">transform</span><span class="s2">(</span><span class="s1">example_patient</span><span class="s2">)</span>
+<span class="s1">prediction </span><span class="s2">= </span><span class="s1">forest_model</span><span class="s2">.</span><span class="s1">predict</span><span class="s2">(</span><span class="s1">example_patient_scaled</span><span class="s2">)[</span><span class="s5">0</span><span class="s2">]</span>
+<span class="s1">prob </span><span class="s2">= </span><span class="s1">forest_model</span><span class="s2">.</span><span class="s1">predict_proba</span><span class="s2">(</span><span class="s1">example_patient_scaled</span><span class="s2">)[</span><span class="s5">0</span><span class="s2">][</span><span class="s5">1</span><span class="s2">]</span>
+
+<span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Prediction:&quot;</span><span class="s2">, </span><span class="s4">&quot;Yes&quot; </span><span class="s0">if </span><span class="s1">prediction </span><span class="s2">== </span><span class="s5">1 </span><span class="s0">else </span><span class="s4">&quot;No&quot;</span><span class="s2">)</span>
+<span class="s1">print</span><span class="s2">(</span><span class="s4">f&quot;Probability of heart disease: </span><span class="s0">{</span><span class="s1">prob</span><span class="s0">:</span><span class="s4">.2f</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s2">)</span></pre>
+</body>
+</html>
